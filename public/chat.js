@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(user)
             // Create and append the image element
             const userImage = document.createElement('img');
-            userImage.src = `${baseUrl}/uploads/${user.profileImage}`|| 'path/to/default/image.jpg';  // Use a default image if none
+            userImage.src = `chat-sql-check-onrender-deployment.onrender.com/uploads/${user.profileImage}`|| 'path/to/default/image.jpg';  // Use a default image if none
             userImage.alt = `${user.username}'s profile image`;
             userImage.classList.add('profile-image');  // Add a class for styling (optional)
             document.getElementById("menu").appendChild(userImage);
