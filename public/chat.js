@@ -1,4 +1,4 @@
-const socket = io.connect('https://chat-sql-check-onrender-deployment.onrender.com/');
+const socket = io.connect('https://able-futuristic-jam.glitch.me');
 const baseUrl = window.location.origin;
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(user)
             // Create and append the image element
             const userImage = document.createElement('img');
-            userImage.src = `${baseUrl}/uploads/${user.profileImage}` || 'path/to/default/image.jpg';  // Use a default image if none
+            userImage.src = `${baseUrl}/uploads/${user.profileImage}`|| 'path/to/default/image.jpg';  // Use a default image if none
             userImage.alt = `${user.username}'s profile image`;
             userImage.classList.add('profile-image');  // Add a class for styling (optional)
             document.getElementById("menu").appendChild(userImage);
@@ -214,23 +214,25 @@ let receiver = ''; // Global receiver variable
 // receivers.addEventListener('input', () => {
 //     receiver = receivers.value.trim(); // Update receiver when the input changes
 // });
-    document.getElementById('fileInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        
-        if (file) {
-            // Odczytanie pliku przy pomocy FileReader
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                // Wyślij dane jako ArrayBuffer do serwera przez WebSocket
-                const arrayBuffer = e.target.result;
-                socket.send(arrayBuffer);
-            };
-            
-            // Odczyt pliku jako ArrayBuffer
-            reader.readAsArrayBuffer(file);
-        }
-    });
+    const fileInput = document.querySelector('#fileInput');
+
+fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('File uploaded:', data.filePath);
+        socket.emit('uploadImage', data.filePath);  // Emit the file path through WebSocket
+    })
+    .catch(err => console.error('Error uploading file:', err));
+});
+
     // Listening for the new image event
 socket.on('newImage', function(data) {
     // Create a Blob from the received image data
