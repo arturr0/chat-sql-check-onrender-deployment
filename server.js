@@ -9,14 +9,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const crypto = require('crypto');
-
+const multer = require('multer');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
 const uploadsDir = path.join(__dirname, 'uploads');  // Define uploadsDir here
-//app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+//app.use('/uploads', express.static('uploads'));
 
 // Create uploads directory if it doesn't exist
 if (!fs.existsSync(uploadsDir)) {
@@ -34,6 +34,32 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+
+// Initialize multer with the defined storage
+
+
+// Handle file upload route
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadsDir); // Set the destination to 'uploads' directory
+    },
+    filename: function (req, file, cb) {
+        const uniqueFileName = `uploaded_image_${Date.now()}_${file.originalname}`;
+        cb(null, uniqueFileName);
+    }
+});
+const upload = multer({ storage: storage });
+
+// Handle file uploads
+app.post('/upload', upload.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    // Send the uploaded file path
+    res.json({ filePath: `/uploads/${req.file.filename}` });
+});
 
 // Encryption/Decryption functions
 const ENCRYPTION_KEY = crypto.randomBytes(32); // Generate a secure random 32-byte key
@@ -454,47 +480,31 @@ io.on('connection', (socket) => {
     });
 
      
-    socket.on('chatMessage', ({ username, messageSent, receiver }) => {
-        // Find sender's ID using socketId
-        db.get('SELECT id FROM users WHERE socketId = ?', [socket.id], (err, sender) => {
-            if (err || !sender) {
-                console.error('Sender not found for socket:', socket.id);
+    socket.on('uploadImage', (imageData) => {
+    const uniqueFileName = `uploaded_image_${socket.id}_${Date.now()}.jpg`;
+    const filePath = path.join(uploadsDir, uniqueFileName); 
+
+    // Save the binary image data to a file
+    fs.writeFile(filePath, imageData, 'binary', (err) => {
+        if (err) {
+            console.error('Error saving the image:', err);
+            return;
+        }
+        console.log('Image saved successfully:', filePath);
+
+        // Update user's profile image in the database
+        db.run(`UPDATE users SET profileImage = ? WHERE socketId = ?`, [filePath, socket.id], (err) => {
+            if (err) {
+                console.error('Error updating profile image:', err);
                 return;
             }
-    
-            // Find receiver's ID by username
-            db.get('SELECT id, socketId, receiver FROM users WHERE username = ?', [receiver], (err, rec) => {
-                if (err || !rec) {
-                    console.error('Receiver not found:', receiver);
-                    return;
-                }
-    
-                // Check if the receiver of this message has the sender set as their receiver
-                let readStatus = 0; // Default is unread (0)
-                if (rec.receiver === sender.id) {
-                    readStatus = 1; // Mark as read (1) if the sender is the receiver's set receiver
-                }
-    
-                const encryptedMessage = encrypt(messageSent); // Encrypt the message for security
-    
-                // Insert message into database with sender, receiver IDs, and read status
-                db.run('INSERT INTO messages (senderId, recId, message, read) VALUES (?, ?, ?, ?)', 
-                    [sender.id, rec.id, encryptedMessage, readStatus], (err) => {
-                    if (err) {
-                        console.error('Error saving message:', err);
-                        return;
-                    }
-    
-                    // Decrypt message before sending (for demonstration purposes)
-                    const decryptedMessage = decrypt(encryptedMessage);
-    
-                    // Send the message to the receiver using their socketId
-                    io.to(rec.socketId).emit('message', { user: username, message: decryptedMessage });
-                });
-            });
+
+            // Broadcast the new image to all users
+            io.emit('newImage', filePath);
         });
     });
-    
+});
+
     socket.on('block', (blockedUsername, callback) => {
         // Find the ID of the user who is blocking
         db.get('SELECT id FROM users WHERE socketId = ?', [socket.id], (err, blocker) => {
