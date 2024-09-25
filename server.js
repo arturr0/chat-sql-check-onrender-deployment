@@ -15,7 +15,8 @@ const server = http.createServer(app);
 const io = socketIo(server);
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
 const uploadsDir = path.join(__dirname, 'uploads');  // Define uploadsDir here
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+//app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static('uploads'));
 
 // Create uploads directory if it doesn't exist
 if (!fs.existsSync(uploadsDir)) {
