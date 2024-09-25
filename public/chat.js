@@ -1,4 +1,4 @@
-const socket = io.connect('https://able-futuristic-jam.glitch.me');
+const socket = io.connect('https://chat-sql-check-onrender-deployment.onrender.com');
 const baseUrl = window.location.origin;
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
