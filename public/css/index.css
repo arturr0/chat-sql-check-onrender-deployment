@@ -1,0 +1,242 @@
+body {
+  background: green;
+  padding: 0;
+  margin: 0;
+}
+/* For WebKit browsers (Chrome, Safari, newer Edge) */
+#chat::-webkit-scrollbar {
+  width: 10px; /* Set the width of the scrollbar */
+  
+}
+.profile-image {
+  width: 40px;  /* Set desired width */
+  height: 40px; /* Set desired height */
+  border-radius: 50%; /* Make it a circle */
+  margin-right: 10px; /* Add some space between the image and text */
+}
+
+/* Scrollbar thumb */
+#chat::-webkit-scrollbar-thumb {
+  background-color: darkgray; /* Color of the scrollbar thumb */
+  
+}
+
+/* Scrollbar track */
+#chat::-webkit-scrollbar-track {
+  background: transparent; /* Background of the scrollbar track */
+}
+
+/* For Firefox */
+#chat {
+  scrollbar-width: thin; /* Sets the scrollbar to be thin (default option) */
+  scrollbar-color: darkgray transparent; /* Color of the scrollbar thumb and track */
+}
+
+/* For Internet Explorer and Edge (legacy) */
+#chat {
+  -ms-overflow-style: scrollbar; /* Sets the scrollbar to be visible */
+}
+@font-face {
+  font-family: 'fontello';
+  src: url('fontello.woff2') format('woff2'),
+       url('fontello.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+h1 a {
+  color: red;
+}
+#mainContent {
+  position: relative;
+  z-index: 0;
+}
+#menu {
+  width: 100vw;
+  height: 10vh;
+  background-color: blanchedalmond;
+  display: flex;
+}
+#friendsAndChat {
+  display: flex;
+  /* height: 90vh; */
+  background-color: aquamarine;
+}
+#friends {
+  width: 20vw;
+}
+#typingIndicator {
+  display: none;
+  color: green;
+}
+#inputAndIcons {
+  display: flex;
+  margin-bottom: 20px;
+  width: 80%;
+}
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+#chatContainer {
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  height: 100%;
+  flex-direction: column;
+  height: 90vh;
+  width: 80vw;
+}
+/* #messagesContainer {
+  margin-bottom: 10px;
+} */
+#chat {
+  display: flex;
+  flex-direction: column; /* Stack items from top to bottom */
+  width: 80%;
+  height: 90%; /* Controls overall height of the chat */
+  background-color: rgb(176, 196, 222);
+  overflow-y: auto; /* Show scrollbar when necessary */
+  position: relative; /* Ensures proper stacking and layout */
+  min-height: 0; /* Prevents overflow issues */
+  padding: 10px; /* Optional padding around chat */
+}
+#receiver {
+  margin-bottom: auto;
+}
+.message {
+  background-color: white; /* Example background color */
+  padding: 10px; /* Example padding */
+  border-radius: 5px; /* Optional rounded corners */
+  /* No margin for spacing */
+}
+
+.bu:last-child {
+  margin-top: auto; /* Push the last message to the bottom */
+}
+
+.message {
+  /* Style for individual messages */
+  background-color: white; /* Example background color */
+  padding: 10px; /* Example padding */
+  border-radius: 5px; /* Optional rounded corners */
+}
+
+
+/* Last child or message element */
+.message {
+  margin-top: auto; /* Pushes this element to the bottom */
+}
+
+
+/* Last child or message element */
+.message {
+  margin-top: auto; /* Pushes this element to the bottom */
+}
+
+#messages {
+  flex-grow: 1;
+  overflow-y: auto; /* Enable vertical scrolling */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: red;
+}
+
+.bubble {
+  --r: 1em;  /* the radius */
+  --t: 1.5em; /* the size of the tail */
+  
+  align-self: flex-end;
+  max-width: 300px;
+  padding: 1em;
+  border-inline: var(--t) solid #0000;
+  border-radius: calc(var(--r) + var(--t))/var(--r);
+  mask: 
+    radial-gradient(100% 100% at var(--_p) 0,#0000 99%,#000 102%) 
+      var(--_p) 100%/var(--t) var(--t) no-repeat,
+    linear-gradient(#000 0 0) padding-box;
+  background: linear-gradient(135deg,#FE6D00,#1384C5) border-box;
+  color: #fff;
+}
+.left {
+  --_p: 0;
+  border-bottom-left-radius: 0 0;
+  align-self: end;
+  margin-left: 20px;
+}
+.right {
+  --_p: 100%;
+  border-bottom-right-radius: 0 0;
+  align-self: start;
+  margin-right: 20px;
+}
+
+
+/* #inputAndIcons {
+  display: flex;
+  width: 100%;
+  margin-bottom: 10px;
+} */
+
+#message {
+  border: none;
+  outline: none;
+}
+.messSend {
+  align-self: flex-end;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.messRec {
+  align-self: flex-start;
+  padding: 10px;
+  font-weight: bold;
+}
+#chatIcons {
+  margin-top: auto;
+  margin-bottom: 10px;
+}
+.messSend {
+  align-self: flex-end;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.messRec {
+  align-self: flex-start;
+  padding: 10px;
+  font-weight: bold;
+}
+#options {
+  position: absolute;
+  left: -100vw; /* Start completely off-screen */
+  top: +10vh;
+  width: 50vw; /* Set width as 50% of viewport width */
+  height: 90vh; /* Fixed height */
+  background-color: #007BFF; /* Rectangle color */
+  transition: left 0.5s ease, opacity 0.5s ease; /* Animation effect */
+  opacity: 0; /* Start invisible */
+  visibility: hidden; /* Initially hidden */
+  z-index: 1;
+}
+
+#options.animate {
+  left: 0; /* Move into view */
+  opacity: 1; /* Make visible */
+  visibility: visible; /* Ensure it's visible */
+}
+
+#content {
+  width: 100vw;
+  height: 100vh;
+  background: #007BFF;
+  z-index: 0;
+  position: relative; /* Position for stacking context */
+}
+
